@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pokémon Finder</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Pokémon Finder</h1>
+        <div class="search-container">
+            <header>
+                <input type="text" id="searchInput" placeholder="Enter Pokémon name or ID...">
+            </header>
+            <div id="suggestions"></div>
+            <button id="searchBtn">Search</button>
+        </div>
+
+        <div id="loading" class="loading" style="display: none;">
+            Loading...
+        </div>
+
+        <div id="error" class="error" style="display: none;">
+            Pokémon not found! Please try again.
+        </div>
+
+        <div id="pokemonCard" class="pokemon-card" style="display: none;">
+            <div class="pokemon-image">
+                <img id="pokemonImg" src="" alt="">
+            </div>
+            <h2 id="pokemonName"></h2>
+            <p id="pokemonId"></p>
+            
+            <div class="pokemon-types">
+                <h3>Type(s)</h3>
+                <div id="pokemonTypes" class="types-container"></div>
+                <div id="typeDetails" class="details-box"></div>
+            </div>
+
+            <div class="pokemon-abilities">
+                <h3>Abilities</h3>
+                <div id="pokemonAbilities" class="abilities-container"></div>
+                <div id="abilityDetails" class="details-box"></div>
+            </div>
+
+            <div class="pokemon-stats">
+                <h3>Stats</h3>
+                <div id="pokemonStats" class="stats-container"></div>
+            </div>
+
+            <div class="pokemon-moves">
+                <h3>Moves</h3>
+                <div id="pokemonMoves" class="moves-container"></div>
+                <div id="moveDetails" class="details-box"></div>
+            </div>
+            <div id="pokemonEvolution">
+                <h3>Evolution Chain</h3>
+                <div id="evolutionChain"></div>
+            </div>
+        </div>
+    </div>
+    <section id="battle">
+        <h2>⚔️ Pokémon Battle Simulator</h2>
+        <input type="text" id="pokemon1" placeholder="Enter first Pokémon">
+        <input type="text" id="pokemon2" placeholder="Enter second Pokémon">
+        <button id="battleButton">Start Battle</button>
+        <div id="battleArena">
+        <div class="pokemon-side" id="pokemon1Side">
+        <img id="pokemon1Img" src="" alt="">
+        <div class="hp-bar">
+        <div class="hp-fill" id="pokemon1Hp"></div>
+        </div>
+        <p id="pokemon1Name"></p>
+        </div>
+
+    <div class="pokemon-side" id="pokemon2Side">
+        <img id="pokemon2Img" src="" alt="">
+        <div class="hp-bar">
+        <div class="hp-fill" id="pokemon2Hp"></div>
+        </div>
+    <p id="pokemon2Name"></p>
+    </div>
+        </div>
+    <div id="battleLog"></div>
+
+    </section>
+
+    <script src="app.js"></script>
+</body>
+</html>
