@@ -11,7 +11,7 @@
         <h1>Pokémon Finder</h1>
         <div class="search-container">
             <header>
-                <input type="text" id="searchInput" placeholder="Enter Pokémon name or ID...">
+                <input type="text" id="searchInput" placeholder="Enter Pokémon name or ID..." oninput="handlePokemonSearch(selectedPokemon)">
             </header>
             <div id="suggestions"></div>
             <button id="searchBtn">Search</button>

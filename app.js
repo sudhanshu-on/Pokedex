@@ -163,44 +163,71 @@ function displayTypes(types) {
     });
 }
 
+let currentPokemonId = null;
+let controller = null; // abort previous fetches
+let debounceTimeout;
+
 async function fetchEvolutionChain(pokemon) {
     const evolutionDiv = document.getElementById('evolutionChain');
-    evolutionDiv.innerHTML = "Loading...";
 
-    try {
-        const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}/`);
-        const speciesData = await speciesRes.json();
+    // Clear previous timeout
+    clearTimeout(debounceTimeout);
 
-        const evoRes = await fetch(speciesData.evolution_chain.url);
-        const evoData = await evoRes.json();
+    // Debounce to avoid rapid API calls
+    debounceTimeout = setTimeout(async () => {
+        // Abort previous fetch if still running
+        if (controller) controller.abort();
+        controller = new AbortController();
+        const signal = controller.signal;
 
-        let chain = [];
-        let current = evoData.chain;
+        // Update current ID
+        currentPokemonId = pokemon.id;
 
-        while (current) {
-            chain.push(current.species.name);
-            current = current.evolves_to[0];
+        // Clear old cards immediately
+        evolutionDiv.innerHTML = "Loading...";
+
+        try {
+            const speciesRes = await fetch(`https://pokeapi.co/api/v2/pokemon-species/${pokemon.id}/`, { signal });
+            const speciesData = await speciesRes.json();
+
+            const evoRes = await fetch(speciesData.evolution_chain.url, { signal });
+            const evoData = await evoRes.json();
+
+            let chain = [];
+            let current = evoData.chain;
+
+            while (current) {
+                chain.push(current.species.name);
+                current = current.evolves_to[0];
+            }
+
+            // Clear loading text before adding new cards
+            evolutionDiv.innerHTML = '';
+
+            for (let name of chain) {
+                // Only display if this request is still current
+                if (pokemon.id !== currentPokemonId) return;
+
+                const pokeRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`, { signal });
+                const pokeData = await pokeRes.json();
+
+                const evoCard = document.createElement('div');
+                evoCard.className = "evo-card";
+                evoCard.innerHTML = `
+                    <img src="${shinyMode ? pokeData.sprites.front_shiny : pokeData.sprites.front_default}" alt="${name}">
+                    <p>${pokeData.name}</p>
+                `;
+                evolutionDiv.appendChild(evoCard);
+            }
+
+        } catch (error) {
+            if (error.name === 'AbortError') return; // ignore aborted requests
+            evolutionDiv.innerHTML = "No evolution data available.";
+            console.error(error);
         }
-
-        evolutionDiv.innerHTML = '';
-        for (let name of chain) {
-            const pokeRes = await fetch(`https://pokeapi.co/api/v2/pokemon/${name}`);
-            const pokeData = await pokeRes.json();
-
-            const evoCard = document.createElement('div');
-            evoCard.className = "evo-card";
-            evoCard.innerHTML = `
-                <img src="${shinyMode ? pokeData.sprites.front_shiny : pokeData.sprites.front_default}" alt="${name}">
-                <p>${pokeData.name}</p>
-            `;
-            evolutionDiv.appendChild(evoCard);
-        }
-
-    } catch (error) {
-        evolutionDiv.innerHTML = "No evolution data available.";
-        console.error(error);
-    }
+    }, 300);
 }
+
 
 // Display Pokemon stats
 function displayStats(stats) {
